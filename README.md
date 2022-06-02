@@ -1,2 +1,2 @@
 # tweetzApp
-Twitter Clone
+Twitter Clone using Django, Reactjs, Bootsrap
