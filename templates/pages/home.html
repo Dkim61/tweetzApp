@@ -6,19 +6,40 @@ Welcome to Tweetz
 
 {% block content %}
 Welcome to Tweetz
+<div id="tweetz">
+    Replace Me
+</div>
+
+
+
 <script>
+    const tweetzElement = document.getElementById("tweetz")
+    tweetzElement.innerHTML = "Loading..."
+
     const xhr = new XMLHttpRequest() // python = of xhr = SomeClasee()
     const method = 'GET' // post
     const url = '/tweetz'
     const responseType = "json"
+
+    function formatTweetElement(tweet) {
+        var formattedTweet = "<div class='mb-4 tweet' id='tweet-" + tweet.id + "'><p>" + tweet.content + "</p></div>"
+        return formattedTweet
+    } 
+
 
     xhr.responseType = responseType
     xhr.open(method, url)
     xhr.onload = function() {
         const serverResponse = xhr.response
         var listedItems = serverResponse.response
-        console.log(listedItems)
-
+        var finalTweetStr = ""
+        var i;
+        for (i=0; i<listedItems.length; i++) {
+            var tweetObj = listedItems[i]
+            var currentItem = formatTweetElement(tweetObj)
+                finalTweetStr += currentItem
+        }
+        tweetzElement.innerHTML = finalTweetStr
     }
     xhr.send()
 
