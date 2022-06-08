@@ -1,5 +1,27 @@
 {% extends 'tweet/base.html' %}
 
+{% block head_title %}
+Welcome to Tweetz
+{% endblock head_title %}
+
 {% block content %}
 Welcome to Tweetz
+<script>
+    const xhr = new XMLHttpRequest() // python = of xhr = SomeClasee()
+    const method = 'GET' // post
+    const url = '/tweetz'
+    const responseType = "json"
+
+    xhr.responseType = responseType
+    xhr.open(method, url)
+    xhr.onload = function() {
+        const serverResponse = xhr.response
+        var listedItems = serverResponse.response
+        console.log(listedItems)
+
+    }
+    xhr.send()
+
+</script>
 {% endblock content %}
+
