@@ -1,13 +1,20 @@
-{% extends 'tweet/base.html' %}
+{% extends 'base.html' %}
 
 {% block head_title %}
-Welcome to Tweetz
+Welcome to Tweetz!
 {% endblock head_title %}
 
 {% block content %}
 Welcome to Tweetz
-<div id="tweetz">
-    Replace Me
+
+<div class='row text-center d-none'>
+    <div class='col'>
+        <h1>Welcome to Tweetz!</h1>
+    </div>
+</div>
+
+<div class="row" id="tweetz">
+    Loading...
 </div>
 
 
@@ -20,9 +27,24 @@ Welcome to Tweetz
     const method = 'GET' // post
     const url = '/tweetz'
     const responseType = "json"
+    function handleTweetActionBtn(tweet_id, currentCount) {
+        console.log(tweet_id, currentCount)
+        currentCount++
+        return 
+    }
+
+
+    function LikeBtn(tweet) {
+        return "<button class='btn btn-primary btn-sm' onclick=handleTweetActionBtn(" + 
+        tweet.id + "," + tweet.likes + ",'like')>" + tweet.likes + " Likes</button>"
+    }
 
     function formatTweetElement(tweet) {
-        var formattedTweet = "<div class='mb-4 tweet' id='tweet-" + tweet.id + "'><p>" + tweet.content + "</p></div>"
+        var formattedTweet = "<div class='col-10 col-md-10 mx-auto border rounded py-3 mb-4 tweet' id='tweet-" + tweet.id + "'><p>" + tweet.content +
+            "</p><div class='btn-group'>" + 
+                LikeBtn(tweet) +
+                "</div></div>"
+
         return formattedTweet
     } 
 
