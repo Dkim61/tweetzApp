@@ -11,6 +11,10 @@ import random
 from django.conf import settings
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
 # Create your views here.
 def home_view(request, *args, **kwargs):
     return render(request, "pages/home.html", context={}, status=200)
@@ -20,7 +24,10 @@ def tweet_create_view(request, *args, **kwargs):
     next_url = request.POST.get("next") or None
     if form.is_valid():
         obj = form.save(commit=False)
+
         obj.save()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({}, status=201) #201 status normally for creating
         if next_url != None and url_has_allowed_host_and_scheme(next_url, ALLOWED_HOSTS):
             return redirect(next_url)
         form = TweetForm()
