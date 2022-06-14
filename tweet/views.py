@@ -2,11 +2,9 @@ import imp
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404, JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
-
 from tweetzDjango.settings import ALLOWED_HOSTS
 from.forms import TweetForm
 from .models import Tweet
-import random
 
 from django.conf import settings
 
@@ -27,10 +25,14 @@ def tweet_create_view(request, *args, **kwargs):
 
         obj.save()
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({}, status=201) #201 status normally for creating
+            return JsonResponse(obj.serialize(), status=201) #201 status normally for creating
         if next_url != None and url_has_allowed_host_and_scheme(next_url, ALLOWED_HOSTS):
             return redirect(next_url)
         form = TweetForm()
+    if form.errors:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse(form.errors, status=400)
+            
     return render(request, "components/form.html", context={"form": form})
 
 def tweets_list_view(request, *args, **kwargs):
@@ -40,7 +42,7 @@ def tweets_list_view(request, *args, **kwargs):
     return JSON data
     """
     qs = Tweet.objects.all()
-    tweetz_list = [{'id': x.id, 'content': x.content, 'likes': random.randint(0, 1213)} for x in qs]
+    tweetz_list = [x.serialize() for x in qs]
     data = {
         'isUser': False,
         'response': tweetz_list
