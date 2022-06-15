@@ -8,7 +8,7 @@ MAX_TWEET_LENGTH = settings.MAX_TWEET_LENGTH
 class TweetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tweet
-        fields = ['id', 'content']
+        fields = ['id', 'content', 'user']
 
     def validate_content(self, value):
         if len(value) > MAX_TWEET_LENGTH:

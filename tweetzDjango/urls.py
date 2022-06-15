@@ -23,4 +23,6 @@ urlpatterns = [
     path('create-tweet/', tweet_create_view),
     path('tweetz/', tweets_list_view),
     path('tweetz/<int:tweet_id>/', tweets_detail_view),
+    path('tweetz/delete/<int:tweet_id>/', tweets_delete_view),
+
 ]
