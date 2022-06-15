@@ -2,9 +2,12 @@ import imp
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404, JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from tweetzDjango.settings import ALLOWED_HOSTS
 from.forms import TweetForm
 from .models import Tweet
+from .serializers import *
 from django.conf import settings
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
@@ -17,7 +20,16 @@ def home_view(request, *args, **kwargs):
     print(request.user or None)
     return render(request, "pages/home.html", context={}, status=200)
 
+@api_view(['POST'])
 def tweet_create_view(request, *args, **kwargs):
+    serializer = TweetSerializer(data=request.POST)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=201)
+    return Response({}, status=400)
+
+
+def tweet_create_view_django(request, *args, **kwargs):
     user = request.user
     if not request.user.is_authenticated:
         user = None
@@ -38,10 +50,26 @@ def tweet_create_view(request, *args, **kwargs):
     if form.errors:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse(form.errors, status=400)
-
     return render(request, "components/form.html", context={"form": form})
 
+
+@api_view(['GET'])
 def tweets_list_view(request, *args, **kwargs):
+    qs = Tweet.objects.all()
+    serializer = TweetSerializer(qs, many=True)
+    return Response(serializer.data, status=200)
+
+@api_view(['GET'])
+def tweets_detail_view(request, tweet_id, *args, **kwargs):
+    qs = Tweet.objects.filter(id=tweet_id)
+    if not qs.exists():
+        return Response({}, status=404)
+    obj = qs.first()
+    serializer = TweetSerializer(obj)
+    return Response(serializer.data, status=200)
+
+
+def tweets_list_view_django(request, *args, **kwargs):
     """
     REST API VIEW
     consumed by JavaScript or Switft/Java/IOS/Android
@@ -55,7 +83,7 @@ def tweets_list_view(request, *args, **kwargs):
     }
     return JsonResponse(data)
 
-def tweet_detail_view(request, tweet_id, *args, **kwargs):
+def tweet_detail_view_django(request, tweet_id, *args, **kwargs):
     """
     REST API VIEW
     consumed by JavaScript or Switft/Java/IOS/Android

@@ -10,4 +10,4 @@ class TweetAdmin(admin.ModelAdmin):
     class Meta:
         model = Tweet
 
-admin.site.register(Tweet)
+admin.site.register(Tweet, TweetAdmin)
