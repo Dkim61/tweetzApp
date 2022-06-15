@@ -5,7 +5,6 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from tweetzDjango.settings import ALLOWED_HOSTS
 from.forms import TweetForm
 from .models import Tweet
-
 from django.conf import settings
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
@@ -15,14 +14,21 @@ def is_ajax(request):
 
 # Create your views here.
 def home_view(request, *args, **kwargs):
+    print(request.user or None)
     return render(request, "pages/home.html", context={}, status=200)
 
 def tweet_create_view(request, *args, **kwargs):
+    user = request.user
+    if not request.user.is_authenticated:
+        user = None
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({}, status=401)
+        return redirect(settings.LOGIN_URL)
     form = TweetForm(request.POST or None)
     next_url = request.POST.get("next") or None
     if form.is_valid():
         obj = form.save(commit=False)
-
+        obj.user = user
         obj.save()
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse(obj.serialize(), status=201) #201 status normally for creating
@@ -32,7 +38,7 @@ def tweet_create_view(request, *args, **kwargs):
     if form.errors:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse(form.errors, status=400)
-            
+
     return render(request, "components/form.html", context={"form": form})
 
 def tweets_list_view(request, *args, **kwargs):
