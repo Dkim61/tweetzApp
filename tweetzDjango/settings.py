@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # local
     'tweet',
+    # third party
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
