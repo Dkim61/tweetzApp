@@ -1,3 +1,4 @@
+from cgitb import reset
 import imp
 from django.shortcuts import render # , redirect
 # from django.http import HttpResponse, Http404, JsonResponse
@@ -60,6 +61,28 @@ def tweets_delete_view(request, tweet_id, *args, **kwargs):
     obj = qs.first()
     obj.delete()
     return Response({'message': 'Success'}, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def tweets_action_view(request, *args, **kwargs):
+    serializer = TweetActionSerializer(data=request.data)
+    if serializer.is_valid():
+        data = serializer.validated_data
+        tweet_id = data.get('id')
+        action = data.get('action')
+        qs = Tweet.objects.filter(id=tweet_id)
+        if not qs.exists():
+            return Response({}, status=404)
+        obj = qs.first()
+        if action =="like":
+            obj.likes.add(request.user)
+            serializer = TweetSerializer(obj)
+            return Response({'message': 'LIKED'}, status=200)
+        elif action =="unlike":
+            obj.likes.remove(request.user)
+        elif action =="retweet":
+            pass
+    return Response({'message': 'Action Performed'}, status=200)
 
 # def tweet_create_view_django(request, *args, **kwargs):
 #     user = request.user
