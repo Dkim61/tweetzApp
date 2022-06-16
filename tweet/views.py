@@ -27,7 +27,7 @@ def home_view(request, *args, **kwargs):
 # @authentication_classes([SessionAuthentication, myCustomAuth]) these two in combination is authentication
 @permission_classes([IsAuthenticated])
 def tweet_create_view(request, *args, **kwargs):
-    serializer = TweetSerializer(data=request.POST)
+    serializer = TweetCreateSerializer(data=request.POST)
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return Response(serializer.data, status=201)
@@ -70,6 +70,7 @@ def tweets_action_view(request, *args, **kwargs):
         data = serializer.validated_data
         tweet_id = data.get('id')
         action = data.get('action')
+        content = data.get("content")
         qs = Tweet.objects.filter(id=tweet_id)
         if not qs.exists():
             return Response({}, status=404)
@@ -81,7 +82,9 @@ def tweets_action_view(request, *args, **kwargs):
         elif action =="unlike":
             obj.likes.remove(request.user)
         elif action =="retweet":
-            pass
+            new_tweet = Tweet.objects.create(user=request.user, parent=obj, content=content)
+            serializer = TweetSerializer(new_tweet)
+            return Response({serializer.data}, status=200)
     return Response({'message': 'Action Performed'}, status=200)
 
 # def tweet_create_view_django(request, *args, **kwargs):
