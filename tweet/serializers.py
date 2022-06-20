@@ -42,3 +42,4 @@ class TweetSerializer(serializers.ModelSerializer):
 
     def get_likes(self, obj):
         return obj.likes.count()
+

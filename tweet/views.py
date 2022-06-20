@@ -70,7 +70,7 @@ def tweets_action_view(request, *args, **kwargs):
         data = serializer.validated_data
         tweet_id = data.get('id')
         action = data.get('action')
-        content = data.get("content")
+        content = data.get('content')
         qs = Tweet.objects.filter(id=tweet_id)
         if not qs.exists():
             return Response({}, status=404)
@@ -78,13 +78,15 @@ def tweets_action_view(request, *args, **kwargs):
         if action =="like":
             obj.likes.add(request.user)
             serializer = TweetSerializer(obj)
-            return Response({'message': 'LIKED'}, status=200)
+            return Response(serializer.data, status=200)
         elif action =="unlike":
             obj.likes.remove(request.user)
+            serializer = TweetSerializer(obj)
+            return Response(serializer.data, status=200)
         elif action =="retweet":
             new_tweet = Tweet.objects.create(user=request.user, parent=obj, content=content)
             serializer = TweetSerializer(new_tweet)
-            return Response({serializer.data}, status=200)
+            return Response(serializer.data, status=201)
     return Response({'message': 'Action Performed'}, status=200)
 
 # def tweet_create_view_django(request, *args, **kwargs):
