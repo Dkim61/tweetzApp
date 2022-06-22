@@ -13,19 +13,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path, include
 from tweet.views import *
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view),
+    path('react/', TemplateView.as_view(template_name='react.html')),
     path('create-tweet/', tweet_create_view),
     path('tweetz/', tweets_list_view),
     path('tweetz/<int:tweet_id>/', tweets_detail_view),
     # path('tweetz/delete/<int:tweet_id>/', tweets_delete_view),
     # path('tweetz/action/<int:tweet_id>/', tweets_action_view),
     path('api/tweetz/', include('tweet.urls')),
-
-
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, 
+                document_root=settings.STATIC_ROOT)
