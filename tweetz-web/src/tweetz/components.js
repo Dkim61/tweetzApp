@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { loadTweets } from '../lookup';
+import { loadTweets, createTweet } from '../lookup';
 
 
 export function TweetzComponent(props) {
@@ -9,11 +9,16 @@ export function TweetzComponent(props) {
     event.preventDefault()
     const newVal = textAreaRef.current.value
     let tempNewTweetz = [...newTweetz]
-    tempNewTweetz.unshift({
-      content: newVal,
-      likes: 0,
-      id: 12313
+    createTweet(newVal, (response,status) => {
+      if (status === 201) {
+        tempNewTweetz.unshift(response)
+      } else {
+        console.log(response)
+        alert('An error occured')
+      }
+   
     })
+
     setNewTweetz(tempNewTweetz)
     textAreaRef.current.value = ''
   }
@@ -32,6 +37,8 @@ export function TweetzComponent(props) {
 export function TweetzList(props) {
     const [tweetzInit, setTweetzInit] = useState([])
     const [tweetz, setTweetz] = useState([])
+    const [tweetzDidSet, setTweetzDidSet] = useState(false)
+
     // setTweetzInit(...props.newTweetz).concat(tweetzInit)
     useEffect(() =>{
       const final = [...props.newTweetz].concat(tweetzInit)
@@ -42,15 +49,18 @@ export function TweetzList(props) {
     }, [props.newTweetz, tweetz, tweetzInit])
 
     useEffect(() => {
-      const myCallback = (response, status) => {
-        if (status === 200){
-          setTweetzInit(response)
-        } else {
-          alert('Error')
+      if (tweetzDidSet === false) {
+        const myCallback = (response, status) => {
+          if (status === 200){
+            setTweetzInit(response)
+            setTweetzDidSet(true)
+          } else {
+            alert('Error')
+          }
         }
+        loadTweets(myCallback)
       }
-      loadTweets(myCallback)
-    }, [])
+    }, [tweetzInit, tweetzDidSet, setTweetzDidSet])
     return tweetz.map((item, index) => {
       return <Tweet tweet={item} className='my-5 py-5 border bg-white text-dark' key={`${index}-{item.id}`}/>
     })
