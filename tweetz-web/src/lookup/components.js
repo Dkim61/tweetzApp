@@ -36,6 +36,7 @@ function backendLookup(method, endpoint, callback, data) {
     console.log(e)
     callback({'message': 'Request was an error'})
   }
+  console.log(jsonData)
   xhr.send(jsonData)
 }
 

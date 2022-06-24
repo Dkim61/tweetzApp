@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-(&@fo=b1kt=k=f40+s=1dz!1&s(y@$@h751bpvx&f7(v6^s2eh
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '.cfe.sh', 'localhost']
+CORS_ALLOW_HEADERS = ['*']
 LOGIN_URL = "/login"
 MAX_TWEET_LENGTH = 240
 TWEET_ACTION_OPTIONS = ['like', 'unlike', 'retweet']
@@ -140,17 +141,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DEFAULT_RENDERER_CLASSES = [
         'rest_framework.renderers.JSONRenderer',
-    ]
+]
+
+DEFAULT_AUTHENTICATION_CLASSES = [
+    'rest_framework.authentication.SessionAuthentication'
+]
 
 if DEBUG:
     DEFAULT_RENDERER_CLASSES += [
         'rest_framework.renderers.BrowsableAPIRenderer',
     ]
+    DEFAULT_AUTHENTICATION_CLASSES += [
+        'tweetzDjango.rest_api.dev.DevAuthentication'
+    ]
 
 REST_FRAMEWORK = {
     
-    'DEFAULT_AUTHENTICATION_CLASSES':[
-        'rest_framework.authentication.SessionAuthentication',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': DEFAULT_AUTHENTICATION_CLASSES,
     'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
 }
