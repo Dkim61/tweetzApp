@@ -119,10 +119,13 @@ export function TweetzList(props) {
       } else if (status === 201) {
         if (didRetweet){
           didRetweet(newActionTweet)
+          refreshPage()
         }
       }
     }
-    
+    function refreshPage() {
+      window.location.reload(false);
+    }
     
     return <div className={className}>
       <div>
@@ -137,3 +140,5 @@ export function TweetzList(props) {
       }
     </div>
   }
+
+ 

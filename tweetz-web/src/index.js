@@ -12,10 +12,11 @@ if (appEl){
   rootAppEl.render(<App/>)
 }
 
+const e = React.createElement
 const tweetsEl = document.getElementById("tweetme")
 if (tweetsEl){
   const rootTweetEl = createRoot(tweetsEl)
-  rootTweetEl.render(<TweetzComponent/>)
+  rootTweetEl.render(e(TweetzComponent, tweetsEl.dataset), tweetsEl)
 }
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
