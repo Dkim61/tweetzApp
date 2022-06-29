@@ -36,6 +36,9 @@ def tweet_create_view(request, *args, **kwargs):
 @api_view(['GET'])
 def tweets_list_view(request, *args, **kwargs):
     qs = Tweet.objects.all()
+    username = request.GET.get('username')
+    if username != None:
+        qs = qs.filter(user__username__iexact=username) #iexact helps filter through api of tweets "http://127.0.0.1:8000/api/tweetz/?username=david"
     serializer = TweetSerializer(qs, many=True)
     return Response(serializer.data, status=200)
 
