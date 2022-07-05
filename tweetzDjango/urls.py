@@ -19,11 +19,18 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from tweet.views import *
 from django.views.generic import TemplateView
-
+from accounts.views import (
+    login_view,
+    logout_view,
+    register_view
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', tweetz_list_view),
+    path('login/', login_view),
+    path('register/', register_view),
+    path('logout/', logout_view),
     path('<int:tweet_id>', tweetz_detail_view),
     path('profile/<str:username>/', tweetz_profile_view),
     path('api/tweetz/', include('tweet.api.urls')),
