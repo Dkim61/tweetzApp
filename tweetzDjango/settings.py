@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # local
     'tweet',
     'accounts',
+    'profiles',
     # third party
     'rest_framework',
     "corsheaders",
